@@ -19,11 +19,12 @@ export default defineConfig({
 	server: {
 		port: 5173,
 		proxy: {
-			"/api": "http://127.0.0.1:3847",
-			"/ws": {
+			"/api/modules/devtools/session": {
 				target: "ws://127.0.0.1:3847",
 				ws: true,
+				rewriteWsOrigin: true,
 			},
+			"/api": "http://127.0.0.1:3847",
 		},
 	},
 });

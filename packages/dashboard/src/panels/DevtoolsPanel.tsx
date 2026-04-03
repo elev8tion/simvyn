@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ChevronDown, ChevronRight, File, Folder, Send, Square, Terminal } from "lucide-react";
+import { ChevronDown, ChevronRight, ChevronUp, File, Folder, FolderOpen, Send, Square, Terminal, X } from "lucide-react";
 import { registerPanel } from "../stores/panel-registry";
 
 // ── Types ────────────────────────────────────────────
@@ -29,6 +29,146 @@ interface ChatMessage {
 	content: string;
 	toolUses?: ToolUseBlock[];
 	isStreaming?: boolean;
+}
+
+interface BrowseEntry {
+	name: string;
+	path: string;
+}
+
+interface BrowseResult {
+	path: string;
+	parent: string | null;
+	entries: BrowseEntry[];
+}
+
+// ── Folder Picker Modal ───────────────────────────────
+
+function FolderPickerModal({
+	onSelect,
+	onClose,
+}: {
+	onSelect: (path: string, name: string) => void;
+	onClose: () => void;
+}) {
+	const [browse, setBrowse] = useState<BrowseResult | null>(null);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
+
+	const navigate = useCallback(async (path?: string) => {
+		setLoading(true);
+		setError(null);
+		try {
+			const url = path
+				? `/api/modules/devtools/browse?path=${encodeURIComponent(path)}`
+				: "/api/modules/devtools/browse";
+			const res = await fetch(url);
+			if (!res.ok) {
+				const err = (await res.json()) as { error: string };
+				setError(err.error ?? "Cannot read directory");
+				return;
+			}
+			setBrowse((await res.json()) as BrowseResult);
+		} catch {
+			setError("Failed to load directory");
+		} finally {
+			setLoading(false);
+		}
+	}, []);
+
+	useEffect(() => {
+		navigate();
+	}, [navigate]);
+
+	const handleSelect = () => {
+		if (!browse) return;
+		const name = browse.path.split("/").filter(Boolean).pop() ?? browse.path;
+		onSelect(browse.path, name);
+	};
+
+	return (
+		<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+			<div className="bg-surface border border-border rounded-xl shadow-2xl w-[480px] max-h-[70vh] flex flex-col">
+				{/* Header */}
+				<div className="flex items-center justify-between px-4 py-3 border-b border-border/40 shrink-0">
+					<div className="flex items-center gap-2">
+						<FolderOpen size={14} className="text-amber-400" />
+						<span className="text-sm font-medium text-text-primary">Open Project</span>
+					</div>
+					<button type="button" onClick={onClose} className="text-text-muted hover:text-text-primary">
+						<X size={14} />
+					</button>
+				</div>
+
+				{/* Current path */}
+				<div className="px-4 py-2 border-b border-border/20 shrink-0">
+					<p className="text-[11px] font-mono text-text-muted truncate" title={browse?.path}>
+						{browse?.path ?? "Loading…"}
+					</p>
+				</div>
+
+				{/* Directory listing */}
+				<div className="flex-1 overflow-auto py-1">
+					{loading && (
+						<div className="flex items-center justify-center h-24 text-xs text-text-muted">
+							Loading…
+						</div>
+					)}
+					{error && (
+						<div className="px-4 py-3 text-xs text-red-400">{error}</div>
+					)}
+					{!loading && !error && browse && (
+						<>
+							{browse.parent !== null && (
+								<button
+									type="button"
+									onClick={() => navigate(browse.parent ?? undefined)}
+									className="flex items-center gap-2 w-full px-3 py-1.5 text-xs text-text-muted hover:bg-white/5 text-left"
+								>
+									<ChevronUp size={12} className="shrink-0 opacity-50" />
+									<span className="font-mono">..</span>
+								</button>
+							)}
+							{browse.entries.length === 0 && (
+								<p className="px-4 py-3 text-xs text-text-muted italic">No subdirectories</p>
+							)}
+							{browse.entries.map((entry) => (
+								<button
+									key={entry.path}
+									type="button"
+									onClick={() => navigate(entry.path)}
+									className="flex items-center gap-2 w-full px-3 py-1.5 text-xs text-text-primary hover:bg-white/5 text-left"
+								>
+									<Folder size={12} className="shrink-0 text-amber-400 opacity-70" />
+									<span className="truncate">{entry.name}</span>
+								</button>
+							))}
+						</>
+					)}
+				</div>
+
+				{/* Footer */}
+				<div className="flex items-center justify-between px-4 py-3 border-t border-border/40 shrink-0 gap-2">
+					<button
+						type="button"
+						onClick={onClose}
+						className="glass-button text-xs"
+					>
+						Cancel
+					</button>
+					<button
+						type="button"
+						onClick={handleSelect}
+						disabled={!browse}
+						className="glass-button-primary text-xs flex items-center gap-1.5"
+					>
+						<FolderOpen size={12} />
+						Open this folder
+					</button>
+				</div>
+			</div>
+		</div>
+	);
 }
 
 // ── File Tree ────────────────────────────────────────
@@ -165,8 +305,7 @@ function DevtoolsPanel() {
 	const [project, setProject] = useState<ProjectInfo | null>(null);
 	const [projectLoading, setProjectLoading] = useState(true);
 	const [tree, setTree] = useState<FileNode[] | null>(null);
-	const [newName, setNewName] = useState("");
-	const [newPath, setNewPath] = useState("");
+	const [showPicker, setShowPicker] = useState(false);
 	const [settingProject, setSettingProject] = useState(false);
 
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -206,18 +345,16 @@ function DevtoolsPanel() {
 		}
 	}, []);
 
-	const handleSetProject = async () => {
-		if (!newName.trim() || !newPath.trim()) return;
+	const handleSetProject = async (path: string, name: string) => {
+		setShowPicker(false);
 		setSettingProject(true);
 		try {
 			const res = await fetch("/api/modules/devtools/project", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ name: newName.trim(), path: newPath.trim() }),
+				body: JSON.stringify({ name, path }),
 			});
 			if (res.ok) {
-				setNewName("");
-				setNewPath("");
 				await fetchProject();
 				// reconnect WS so session_ready fires for new project
 				wsRef.current?.close();
@@ -330,7 +467,10 @@ function DevtoolsPanel() {
 	const connectWs = useCallback(() => {
 		if (wsRef.current?.readyState === WebSocket.OPEN) return;
 		const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-		const url = `${protocol}//${window.location.host}/api/modules/devtools/session`;
+		// In dev (Vite), bypass the proxy and connect directly to the backend —
+		// Vite's HMR WS conflicts with the upgrade proxy on the same port.
+		const host = import.meta.env.DEV ? "127.0.0.1:3847" : window.location.host;
+		const url = `${protocol}//${host}/api/modules/devtools/session`;
 		const ws = new WebSocket(url);
 		wsRef.current = ws;
 
@@ -404,6 +544,12 @@ function DevtoolsPanel() {
 
 	return (
 		<div className="flex flex-col h-full overflow-hidden">
+			{showPicker && (
+				<FolderPickerModal
+					onSelect={handleSetProject}
+					onClose={() => setShowPicker(false)}
+				/>
+			)}
 			{/* Header */}
 			<div className="flex items-center justify-between px-4 py-3 border-b border-border/30 shrink-0">
 				<h1 className="text-base font-medium text-text-primary">Devtools</h1>
@@ -446,8 +592,16 @@ function DevtoolsPanel() {
 						</div>
 					) : project ? (
 						<div className="flex-1 overflow-auto py-1">
-							<div className="px-3 py-1 text-xs font-medium text-amber-400/80 truncate mb-0.5">
-								{project.name}
+							<div className="px-3 py-1 flex items-center justify-between gap-1 mb-0.5">
+								<span className="text-xs font-medium text-amber-400/80 truncate">{project.name}</span>
+								<button
+									type="button"
+									onClick={() => setShowPicker(true)}
+									title="Change project"
+									className="shrink-0 text-text-muted hover:text-text-primary"
+								>
+									<FolderOpen size={11} />
+								</button>
 							</div>
 							{tree ? (
 								<div className="px-1">
@@ -460,30 +614,17 @@ function DevtoolsPanel() {
 							)}
 						</div>
 					) : (
-						<div className="flex-1 p-3 space-y-2 overflow-auto">
-							<p className="text-xs text-text-muted">No active project</p>
-							<input
-								type="text"
-								value={newName}
-								onChange={(e) => setNewName(e.target.value)}
-								placeholder="Project name"
-								className="glass-input text-xs w-full"
-							/>
-							<input
-								type="text"
-								value={newPath}
-								onChange={(e) => setNewPath(e.target.value)}
-								placeholder="/path/to/project"
-								className="glass-input text-xs w-full font-mono"
-								onKeyDown={(e) => e.key === "Enter" && handleSetProject()}
-							/>
+						<div className="flex-1 flex flex-col items-center justify-center p-4 gap-3">
+							<FolderOpen size={28} className="text-amber-400/50" />
+							<p className="text-xs text-text-muted text-center">No project open</p>
 							<button
 								type="button"
-								onClick={handleSetProject}
-								disabled={settingProject || !newName.trim() || !newPath.trim()}
-								className="glass-button-primary text-xs w-full"
+								onClick={() => setShowPicker(true)}
+								disabled={settingProject}
+								className="glass-button-primary text-xs flex items-center gap-1.5"
 							>
-								{settingProject ? "Setting…" : "Set Project"}
+								<FolderOpen size={12} />
+								{settingProject ? "Opening…" : "Open Project…"}
 							</button>
 						</div>
 					)}

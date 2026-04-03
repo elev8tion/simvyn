@@ -54,6 +54,39 @@ export const devtoolsPlugin: FastifyPluginAsync = async (fastify, _opts) => {
 		return reply.status(200).send({ cleared: true });
 	});
 
+	// GET /browse?path=… — list subdirectories for folder picker
+	fastify.get<{ Querystring: { path?: string } }>("/browse", async (req, reply) => {
+		const homedir = (await import("node:os")).homedir();
+		const rawPath = req.query.path?.trim() || homedir;
+		// Prevent traversal outside real directories
+		const dirPath = nodePath.resolve(rawPath);
+
+		interface DirEntry {
+			name: string;
+			path: string;
+		}
+
+		let entries: DirEntry[] = [];
+		try {
+			const items = fs.readdirSync(dirPath, { withFileTypes: true });
+			entries = items
+				.filter(
+					(e) =>
+						e.isDirectory() &&
+						!e.name.startsWith(".") &&
+						!["node_modules", "dist", "build"].includes(e.name),
+				)
+				.sort((a, b) => a.name.localeCompare(b.name))
+				.map((e) => ({ name: e.name, path: nodePath.join(dirPath, e.name) }));
+		} catch {
+			return reply.status(400).send({ error: "Cannot read directory" });
+		}
+
+		const parent = dirPath !== nodePath.parse(dirPath).root ? nodePath.dirname(dirPath) : null;
+
+		return reply.send({ path: dirPath, parent, entries });
+	});
+
 	// GET /tree?depth=N — return directory tree for active project (max depth 4)
 	fastify.get<{ Querystring: { depth?: string } }>("/tree", async (req, reply) => {
 		const project = getProject();
