@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "summary": { "total": 3, "critical": 0, "warns": 3, "infos": 0, "elapsed": 71000000 },
+  "findings": [
+    {
+      "severity": "WARN",
+      "title": "Outdated Minimum Deployment Target",
+      "guideline": "COMPAT-001",
+      "detail": "Minimum deployment target is iOS 14, recommend iOS 16+",
+      "ruleCode": "DEPLOY_TARGET_LOW",
+      "filePath": "project.pbxproj",
+      "lineNumber": 42
+    }
+  ]
+}

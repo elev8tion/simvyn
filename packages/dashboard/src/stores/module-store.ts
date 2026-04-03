@@ -23,6 +23,7 @@ const DOCK_ORDER: string[] = [
 	"collections",
 	"device-settings",
 	"tool-settings",
+	"devtools",
 ];
 
 function sortModules(modules: ModuleInfo[]): ModuleInfo[] {

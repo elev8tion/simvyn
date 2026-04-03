@@ -5,6 +5,20 @@ node_modules/
 dist/
 *.tsbuildinfo
 
+# Compiled TS artifacts (source .ts files are canonical; .js/.d.ts are generated)
+packages/modules/**/*.js
+packages/modules/**/*.js.map
+packages/modules/**/*.d.ts
+packages/modules/**/*.d.ts.map
+packages/cli/*.js
+packages/cli/*.js.map
+packages/cli/*.d.ts
+packages/cli/*.d.ts.map
+packages/dashboard/vite.config.js
+packages/dashboard/vite.config.js.map
+packages/dashboard/vite.config.d.ts
+packages/dashboard/vite.config.d.ts.map
+
 # Environment / Secrets
 .env
 .env.*
@@ -43,3 +57,4 @@ coverage/
 *.log
 tmp/
 .tmp/
+.task-logs/

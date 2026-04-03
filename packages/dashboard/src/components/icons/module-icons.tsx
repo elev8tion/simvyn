@@ -673,6 +673,52 @@ function CollectionsIcon({ size = 24, className }: IconProps) {
 	);
 }
 
+function DevtoolsIcon({ size = 24, className }: IconProps) {
+	return (
+		<svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+			<defs>
+				<linearGradient id="dtGrad" x1="0" y1="0" x2="0" y2="1">
+					<stop offset="0%" stopColor="#FB923C" stopOpacity="0.4" />
+					<stop offset="100%" stopColor="#FB923C" stopOpacity="0.12" />
+				</linearGradient>
+				<linearGradient id="dtHi" x1="0" y1="0" x2="0" y2="1">
+					<stop offset="0%" stopColor="#ffffff" stopOpacity="0.2" />
+					<stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+				</linearGradient>
+			</defs>
+			<rect
+				x="2"
+				y="3"
+				width="20"
+				height="18"
+				rx="3"
+				fill="url(#dtGrad)"
+				stroke="#FB923C"
+				strokeWidth="1"
+				strokeOpacity="0.6"
+			/>
+			<rect x="2.5" y="3.5" width="19" height="7" rx="2.5" fill="url(#dtHi)" />
+			<circle cx="5.5" cy="7" r="0.8" fill="#FB923C" opacity="0.4" />
+			<circle cx="8" cy="7" r="0.8" fill="#FB923C" opacity="0.3" />
+			<path
+				d="M6 13.5l2.5 2.5L6 18.5"
+				stroke="#FB923C"
+				strokeWidth="1.5"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				strokeOpacity="0.8"
+			/>
+			<path
+				d="M10.5 18.5h5"
+				stroke="#FB923C"
+				strokeWidth="1"
+				strokeLinecap="round"
+				strokeOpacity="0.5"
+			/>
+		</svg>
+	);
+}
+
 function ToolSettingsIcon({ size = 24, className }: IconProps) {
 	return (
 		<svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
@@ -725,6 +771,7 @@ export const moduleIconMap: Record<string, ComponentType<IconProps>> = {
 	media: MediaIcon,
 	clipboard: ClipboardIcon,
 	"tool-settings": ToolSettingsIcon,
+	devtools: DevtoolsIcon,
 };
 
 export const moduleLabelMap: Record<string, string> = {
@@ -743,4 +790,5 @@ export const moduleLabelMap: Record<string, string> = {
 	media: "Media",
 	clipboard: "Clipboard",
 	"tool-settings": "Tool Settings",
+	devtools: "Devtools",
 };

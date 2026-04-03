@@ -1,0 +1,11 @@
+{
+	"name": "@simvyn/module-devtools",
+	"private": true,
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./manifest.ts",
+	"dependencies": {
+		"@anthropic-ai/claude-code": "^2.1.91",
+		"@simvyn/types": "*"
+	}
+}

@@ -1,0 +1,24 @@
+{
+  "passed": false,
+  "summary": { "total": 2, "critical": 2, "warns": 0, "infos": 0, "elapsed": 89000000 },
+  "findings": [
+    {
+      "severity": "CRITICAL",
+      "title": "Missing Privacy Manifest",
+      "guideline": "PRIVACY-001",
+      "detail": "No PrivacyInfo.xcprivacy found in bundle",
+      "ruleCode": "PRIV_MANIFEST_MISSING",
+      "filePath": "MyApp.app",
+      "lineNumber": 0
+    },
+    {
+      "severity": "CRITICAL",
+      "title": "Unencrypted Data at Rest",
+      "guideline": "DATA-003",
+      "detail": "NSFileProtectionNone detected on sensitive files",
+      "ruleCode": "DATA_ENCRYPTION_MISSING",
+      "filePath": "MyApp.app/Documents",
+      "lineNumber": 0
+    }
+  ]
+}

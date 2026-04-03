@@ -1,0 +1,11 @@
+{
+	"name": "@simvyn/module-blitzing",
+	"private": true,
+	"version": "0.1.0",
+	"type": "module",
+	"main": "./manifest.ts",
+	"dependencies": {
+		"@simvyn/types": "*",
+		"@simvyn/module-shared": "*"
+	}
+}

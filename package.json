@@ -22,7 +22,7 @@
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"lint": "oxlint .",
-		"test": "node --import tsx --test --experimental-test-module-mocks packages/core/src/__tests__/**/*.test.ts"
+		"test": "node --import tsx --test --experimental-test-module-mocks packages/core/src/__tests__/**/*.test.ts packages/modules/greenmeansgo/__tests__/**/*.test.ts packages/modules/blitzing/__tests__/**/*.test.ts packages/modules/pipeline/__tests__/**/*.test.ts"
 	},
 	"simple-git-hooks": {
 		"pre-commit": "npx lint-staged"
@@ -41,5 +41,9 @@
 		"tsup": "^8.5.1",
 		"tsx": "^4.21.0",
 		"typescript": "^5.9.3"
+	},
+	"dependencies": {
+		"@anthropic-ai/claude-code": "^2.1.91",
+		"@fastify/websocket": "^11.2.0"
 	}
 }
