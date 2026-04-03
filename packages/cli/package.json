@@ -1,0 +1,63 @@
+{
+	"name": "simvyn",
+	"version": "2.6.5",
+	"type": "module",
+	"description": "Universal mobile device devtool — control iOS Simulators, Android Emulators, and real devices from a single dashboard and CLI",
+	"main": "./dist/index.js",
+	"bin": {
+		"simvyn": "./dist/index.js"
+	},
+	"exports": {
+		".": {
+			"default": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist/",
+		"README.md",
+		"LICENSE"
+	],
+	"scripts": {
+		"bundle": "tsup"
+	},
+	"engines": {
+		"node": ">=22.12.0"
+	},
+	"keywords": [
+		"simulator",
+		"emulator",
+		"ios",
+		"android",
+		"devtools",
+		"simctl",
+		"devicectl",
+		"adb",
+		"mobile",
+		"real-device",
+		"usb"
+	],
+	"license": "MIT",
+	"author": "Pranshu Chittora",
+	"homepage": "https://github.com/pranshuchittora/simvyn#readme",
+	"bugs": {
+		"url": "https://github.com/pranshuchittora/simvyn/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/pranshuchittora/simvyn.git"
+	},
+	"dependencies": {
+		"@fastify/multipart": "^9.4.0",
+		"@fastify/static": "^9.0.0",
+		"@fastify/websocket": "^11.2.0",
+		"@tmcw/togeojson": "^7.1.2",
+		"@xmldom/xmldom": "^0.8.11",
+		"better-sqlite3": "^12.6.2",
+		"boxen": "^8.0.1",
+		"cfonts": "^3.3.1",
+		"commander": "^14",
+		"fastify": "^5.7.4",
+		"fastify-plugin": "^5.1.0",
+		"open": "^10"
+	}
+}

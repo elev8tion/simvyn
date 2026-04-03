@@ -1,0 +1,688 @@
+@import "tailwindcss";
+
+@theme {
+	--color-bg-base: oklch(0.1 0.012 270);
+	--color-bg-surface: oklch(0.17 0.014 270);
+	--color-bg-elevated: oklch(0.21 0.016 270);
+	--color-glass: oklch(0.19 0.015 270 / 0.5);
+	--color-glass-hover: oklch(0.24 0.015 270 / 0.65);
+	--color-glass-border: oklch(1 0 0 / 0.08);
+	--color-glass-border-hover: oklch(1 0 0 / 0.18);
+	--color-accent-blue: oklch(0.7 0.12 240);
+	--color-accent-purple: oklch(0.65 0.12 290);
+	--color-accent-teal: oklch(0.72 0.1 190);
+	--color-text-primary: oklch(0.93 0.005 260);
+	--color-text-secondary: oklch(0.65 0.005 260);
+	--color-text-muted: oklch(0.45 0.005 260);
+	--color-border: oklch(1 0 0 / 0.08);
+	--font-brand: "Cascadia Code", "SF Mono", ui-monospace, monospace;
+	--radius-panel: 14px;
+	--radius-button: 10px;
+}
+
+html {
+	height: 100%;
+}
+
+body {
+	height: 100%;
+	background: linear-gradient(
+		145deg,
+		oklch(0.09 0.02 280) 0%,
+		oklch(0.1 0.016 260) 30%,
+		oklch(0.085 0.013 240) 60%,
+		oklch(0.11 0.02 270) 100%
+	);
+	color: var(--color-text-primary);
+	font-family:
+		"Inter",
+		-apple-system,
+		BlinkMacSystemFont,
+		sans-serif;
+	font-feature-settings: "cv11", "ss01";
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+/* Glass panel base */
+.glass-panel {
+	backdrop-filter: blur(20px) saturate(1.4);
+	-webkit-backdrop-filter: blur(20px) saturate(1.4);
+	background: rgba(40, 40, 55, 0.5);
+	border: 1px solid var(--color-glass-border);
+	border-radius: var(--radius-panel);
+	box-shadow:
+		0 4px 24px rgba(0, 0, 0, 0.3),
+		inset 0 0.5px 0 rgba(255, 255, 255, 0.08);
+	color: var(--color-text-primary);
+}
+
+/* Top bar */
+.top-bar {
+	backdrop-filter: blur(20px) saturate(1.4);
+	-webkit-backdrop-filter: blur(20px) saturate(1.4);
+	background: rgba(28, 28, 40, 0.65);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Glass button */
+.glass-button {
+	background: rgba(255, 255, 255, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: var(--radius-button);
+	padding: 6px 12px;
+	color: var(--color-text-primary);
+	cursor: pointer;
+	font-size: 0.75rem;
+	font-family: inherit;
+	transition:
+		background 0.2s ease,
+		border-color 0.2s ease;
+}
+
+.glass-button:hover {
+	background: rgba(255, 255, 255, 0.16);
+	border-color: rgba(255, 255, 255, 0.2);
+}
+
+.glass-button:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
+/* Glass form elements */
+.glass-input {
+	background: rgba(0, 0, 0, 0.2);
+	color: var(--color-text-primary);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	padding: 8px 12px;
+	border-radius: var(--radius-button);
+	font-size: 0.85rem;
+	font-family: inherit;
+}
+
+.glass-input::placeholder {
+	color: rgba(255, 255, 255, 0.3);
+}
+
+.glass-input:focus {
+	border-color: rgba(0, 180, 255, 0.5);
+	box-shadow: 0 0 0 2px rgba(0, 180, 255, 0.15);
+	outline: none;
+}
+
+.glass-select {
+	background: rgba(0, 0, 0, 0.2);
+	color: var(--color-text-primary);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	padding: 6px 10px;
+	border-radius: var(--radius-button);
+	font-size: 0.8rem;
+	cursor: pointer;
+	font-family: inherit;
+}
+
+.glass-select option {
+	background: #1e1e28;
+	color: #e8e8ed;
+}
+
+/* Thin translucent scrollbars */
+::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	background: oklch(0.45 0.015 260 / 0.35);
+	border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: oklch(0.55 0.015 260 / 0.5);
+}
+
+::-webkit-scrollbar-corner {
+	background: transparent;
+}
+
+/* Firefox scrollbar */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: oklch(0.45 0.015 260 / 0.35) transparent;
+}
+
+/* Dock sidebar — hover zone wraps the pill so the left margin is part of the target */
+.dock-sidebar-hitarea {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	display: flex;
+	align-items: center;
+	padding-left: 12px;
+	z-index: 20;
+}
+
+/* Dock sidebar — floating pill (macOS Liquid Glass dock) */
+.dock-sidebar {
+	position: relative;
+	z-index: 20;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	padding: 8px 6px;
+	gap: 2px;
+	/* width driven by framer-motion */
+	border-radius: 16px;
+	backdrop-filter: blur(40px) saturate(1.4);
+	-webkit-backdrop-filter: blur(40px) saturate(1.4);
+	background: rgba(30, 30, 45, 0.85);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	box-shadow:
+		0 8px 32px rgba(0, 0, 0, 0.3),
+		inset 0 0.5px 0 rgba(255, 255, 255, 0.08);
+	overflow-y: auto;
+	overflow-x: hidden;
+	align-self: center;
+}
+
+.dock-icon {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	height: 38px;
+	padding: 0 7px;
+	border-radius: 10px;
+	color: var(--color-text-secondary);
+	cursor: pointer;
+	transition:
+		background 0.15s ease,
+		color 0.15s ease;
+	user-select: none;
+	border: none;
+	background: none;
+	font-family: inherit;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.dock-icon-svg {
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+}
+
+.dock-label {
+	font-size: 12.5px;
+	font-weight: 500;
+	color: var(--color-text-secondary);
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.dock-icon:hover {
+	background: rgba(255, 255, 255, 0.08);
+	color: var(--color-text-primary);
+}
+
+.dock-icon:hover .dock-label {
+	color: var(--color-text-primary);
+}
+
+.dock-icon.active {
+	color: var(--color-accent-blue);
+	background: rgba(0, 122, 255, 0.15);
+}
+
+.dock-icon.active .dock-label {
+	color: var(--color-accent-blue);
+}
+
+/* Active dot indicator — LEFT side (macOS Dock style) */
+.dock-icon.active::after {
+	content: "";
+	position: absolute;
+	left: -6px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	background: var(--color-accent-blue);
+	box-shadow: 0 0 6px var(--color-accent-blue);
+}
+
+/* Sonner toast overrides */
+[data-sonner-toaster] [data-sonner-toast] {
+	background: rgba(40, 40, 55, 0.65) !important;
+	backdrop-filter: blur(20px) saturate(1.4) !important;
+	-webkit-backdrop-filter: blur(20px) saturate(1.4) !important;
+	border: 1px solid rgba(255, 255, 255, 0.08) !important;
+	color: #e8e8ed !important;
+	border-radius: 12px !important;
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast] [data-close-button] {
+	background: oklch(0.2 0.02 260 / 0.6) !important;
+	border: 1px solid oklch(0.35 0.02 260 / 0.15) !important;
+	color: oklch(0.65 0.01 260) !important;
+}
+
+[data-sonner-toaster] [data-sonner-toast] [data-description] {
+	color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ─── Primary action button (blue) ─── */
+.glass-button-primary {
+	background: rgba(0, 122, 255, 0.25);
+	border: 1px solid rgba(0, 122, 255, 0.35);
+	border-radius: var(--radius-button);
+	padding: 6px 12px;
+	color: rgba(100, 180, 255, 1);
+	cursor: pointer;
+	font-size: 0.75rem;
+	font-family: inherit;
+	transition: background 0.15s ease;
+}
+
+.glass-button-primary:hover {
+	background: rgba(0, 122, 255, 0.4);
+}
+
+.glass-button-primary:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
+/* ─── Destructive button (red) ─── */
+.glass-button-destructive {
+	background: rgba(255, 107, 107, 0.12);
+	color: #ff6b6b;
+	border: 1px solid rgba(255, 107, 107, 0.2);
+	border-radius: var(--radius-button);
+	padding: 6px 12px;
+	cursor: pointer;
+	font-size: 0.75rem;
+	font-family: inherit;
+	transition: background 0.15s ease;
+}
+
+.glass-button-destructive:hover {
+	background: rgba(255, 107, 107, 0.25);
+}
+
+.glass-button-destructive:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
+/* ─── Tab bar (segmented control container) ─── */
+.glass-tab-bar {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+	padding: 2px;
+	border-radius: 12px;
+	background: rgba(255, 255, 255, 0.03);
+	border: 1px solid rgba(255, 255, 255, 0.04);
+	width: fit-content;
+}
+
+/* ─── Individual tab ─── */
+.glass-tab {
+	padding: 6px 16px;
+	border-radius: 10px;
+	font-size: 0.75rem;
+	font-weight: 500;
+	color: var(--color-text-secondary);
+	cursor: pointer;
+	transition: all 0.15s ease;
+	border: none;
+	background: transparent;
+	font-family: inherit;
+}
+
+.glass-tab.active {
+	background: var(--color-glass);
+	color: var(--color-text-primary);
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.glass-tab:hover:not(.active) {
+	color: var(--color-text-primary);
+}
+
+/* ─── Data table ─── */
+.glass-table {
+	width: 100%;
+	font-size: 0.875rem;
+}
+
+.glass-table thead tr {
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+	text-align: left;
+}
+
+.glass-table thead th {
+	padding: 8px 16px;
+	font-size: 0.75rem;
+	font-weight: 500;
+	color: var(--color-text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.glass-table tbody tr {
+	border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+	transition: background 0.1s ease;
+}
+
+.glass-table tbody tr:hover {
+	background: rgba(255, 255, 255, 0.02);
+}
+
+.glass-table td {
+	padding: 6px 16px;
+}
+
+/* ─── Badge (colored pill) ─── */
+.glass-badge {
+	display: inline-flex;
+	align-items: center;
+	border-radius: 9999px;
+	border: 1px solid;
+	padding: 2px 8px;
+	font-size: 0.6875rem;
+	font-weight: 500;
+}
+
+/* ─── Drop zone (file upload area) ─── */
+.glass-drop-zone {
+	border: 2px dashed rgba(255, 255, 255, 0.08);
+	border-radius: var(--radius-panel);
+	padding: 48px;
+	text-align: center;
+	transition:
+		border-color 0.15s ease,
+		background 0.15s ease;
+}
+
+.glass-drop-zone.drag-over {
+	border-color: rgba(0, 122, 255, 0.4);
+	background: rgba(0, 122, 255, 0.04);
+}
+
+/* ─── Textarea (code/JSON editor) ─── */
+.glass-textarea {
+	width: 100%;
+	background: transparent;
+	color: var(--color-text-primary);
+	font-family: "SF Mono", "Fira Code", ui-monospace, monospace;
+	font-size: 0.875rem;
+	resize: none;
+	outline: none;
+	padding: 12px;
+}
+
+/* ─── Empty state (no data placeholder) ─── */
+.glass-empty-state {
+	text-align: center;
+	padding: 48px;
+	color: var(--color-text-secondary);
+	font-size: 0.875rem;
+}
+
+/* ─── Star on GitHub button (liquid glass) ─── */
+.glass-star-button {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	padding: 4px 10px;
+	border-radius: 8px;
+	backdrop-filter: blur(12px) saturate(1.3);
+	-webkit-backdrop-filter: blur(12px) saturate(1.3);
+	background: rgba(255, 200, 50, 0.1);
+	border: 1px solid rgba(255, 200, 50, 0.25);
+	color: rgba(255, 210, 70, 0.95);
+	font-size: 0.6875rem;
+	font-family: inherit;
+	cursor: pointer;
+	text-decoration: none;
+	box-shadow:
+		0 0 12px rgba(255, 200, 50, 0.08),
+		inset 0 0.5px 0 rgba(255, 200, 50, 0.1);
+	transition:
+		background 0.15s ease,
+		color 0.15s ease,
+		border-color 0.15s ease,
+		box-shadow 0.15s ease;
+}
+
+.glass-star-button:hover {
+	background: rgba(255, 200, 50, 0.18);
+	border-color: rgba(255, 200, 50, 0.35);
+	color: rgba(255, 220, 80, 1);
+	box-shadow:
+		0 0 16px rgba(255, 200, 50, 0.15),
+		inset 0 0.5px 0 rgba(255, 200, 50, 0.15);
+}
+
+.glass-star-button:hover svg {
+	fill: rgba(255, 210, 70, 0.95);
+}
+
+/* ─── Command Palette hint button ─── */
+.cmdk-hint {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	padding: 4px 10px;
+	border-radius: 8px;
+	background: rgba(255, 255, 255, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	color: var(--color-text-secondary);
+	font-size: 0.6875rem;
+	font-family: inherit;
+	cursor: pointer;
+	transition:
+		background 0.15s ease,
+		color 0.15s ease;
+}
+
+.cmdk-hint:hover {
+	background: rgba(255, 255, 255, 0.16);
+	color: var(--color-text-primary);
+}
+
+/* ─── Keyboard shortcut badge (inline in buttons) ─── */
+.cmdk-kbd {
+	display: inline-block;
+	font-size: 0.625rem;
+	font-family: inherit;
+	opacity: 0.5;
+	margin-left: 4px;
+	vertical-align: baseline;
+}
+
+/* ─── Command Palette (cmdk) ─── */
+.cmdk-overlay {
+	position: fixed;
+	inset: 0;
+	z-index: 50;
+	background: rgba(0, 0, 0, 0.5);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+}
+
+.cmdk-dialog {
+	position: fixed;
+	top: 20%;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 51;
+	max-width: 560px;
+	width: 90%;
+	backdrop-filter: blur(24px) saturate(1.4);
+	-webkit-backdrop-filter: blur(24px) saturate(1.4);
+	background: rgba(30, 30, 45, 0.95);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 16px;
+	box-shadow:
+		0 8px 40px rgba(0, 0, 0, 0.5),
+		0 2px 12px rgba(0, 0, 0, 0.3),
+		inset 0 0.5px 0 rgba(255, 255, 255, 0.08);
+	overflow: hidden;
+	animation: cmdk-fade-in 0.15s ease;
+}
+
+@keyframes cmdk-fade-in {
+	from {
+		opacity: 0;
+		transform: translateX(-50%) scale(0.96);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(-50%) scale(1);
+	}
+}
+
+.cmdk-search-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 14px 16px;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cmdk-search-icon {
+	color: var(--color-text-muted);
+	flex-shrink: 0;
+}
+
+[cmdk-input] {
+	flex: 1;
+	background: transparent;
+	border: none;
+	outline: none;
+	color: var(--color-text-primary);
+	font-size: 0.9375rem;
+	font-family: inherit;
+	caret-color: var(--color-accent-blue);
+}
+
+[cmdk-input]::placeholder {
+	color: var(--color-text-muted);
+}
+
+[cmdk-list] {
+	max-height: 320px;
+	overflow-y: auto;
+	padding: 8px;
+}
+
+[cmdk-group-heading] {
+	padding: 8px 8px 4px;
+	font-size: 0.6875rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: var(--color-text-muted);
+}
+
+[cmdk-item] {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 8px 10px;
+	border-radius: 8px;
+	cursor: pointer;
+	font-size: 0.8125rem;
+	color: var(--color-text-secondary);
+	transition: background 0.1s ease;
+}
+
+[cmdk-item][data-selected="true"] {
+	background: rgba(255, 255, 255, 0.08);
+	color: var(--color-text-primary);
+}
+
+[cmdk-item]:active {
+	background: rgba(255, 255, 255, 0.12);
+}
+
+.cmdk-item-text {
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+	min-width: 0;
+}
+
+.cmdk-item-description {
+	font-size: 0.6875rem;
+	color: var(--color-text-muted);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+[cmdk-separator] {
+	height: 1px;
+	background: rgba(255, 255, 255, 0.06);
+	margin: 4px 8px;
+}
+
+[cmdk-empty] {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 32px 16px;
+	color: var(--color-text-muted);
+	font-size: 0.8125rem;
+}
+
+/* ─── Wide screen: larger buttons ─── */
+@media (min-width: 1280px) {
+	.glass-button,
+	.glass-button-primary,
+	.glass-button-destructive {
+		font-size: 0.8125rem;
+		padding: 7px 14px;
+	}
+
+	.glass-tab {
+		font-size: 0.8125rem;
+		padding: 7px 18px;
+	}
+
+	.glass-star-button,
+	.cmdk-hint {
+		font-size: 0.75rem;
+		padding: 5px 12px;
+	}
+}
+
+/* ─── Accessibility ─── */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+	}
+	.glass-panel,
+	.top-bar,
+	.dock-sidebar {
+		backdrop-filter: blur(8px) saturate(1.1);
+		-webkit-backdrop-filter: blur(8px) saturate(1.1);
+	}
+}

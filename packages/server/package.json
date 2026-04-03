@@ -1,0 +1,22 @@
+{
+	"name": "@simvyn/server",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
+	"exports": {
+		".": {
+			"types": "./src/index.ts",
+			"default": "./src/index.ts"
+		}
+	},
+	"dependencies": {
+		"@fastify/static": "^9.0.0",
+		"@fastify/websocket": "^11.2.0",
+		"@simvyn/core": "*",
+		"@simvyn/types": "*",
+		"fastify": "^5.7.4",
+		"fastify-plugin": "^5.1.0"
+	}
+}
