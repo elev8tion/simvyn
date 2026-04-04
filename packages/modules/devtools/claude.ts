@@ -26,7 +26,7 @@ export async function* runSession(opts: {
 
 	const proc = spawn(
 		"claude",
-		["-p", fullPrompt, "--output-format", "stream-json", "--verbose", "--allowedTools", "Edit,Write,Bash,Read,Glob,Grep"],
+		["-p", fullPrompt, "--output-format", "stream-json", "--allowedTools", "Edit,Write,Bash,Read,Glob,Grep"],
 		{
 			cwd: opts.cwd,
 			env: { ...process.env },
@@ -43,6 +43,10 @@ export async function* runSession(opts: {
 	opts.signal.addEventListener("abort", onAbort, { once: true });
 
 	try {
+		// Drain stderr concurrently so the pipe buffer never fills and deadlocks stdout.
+		const stderrChunks: Buffer[] = [];
+		proc.stderr?.on("data", (chunk: Buffer) => stderrChunks.push(chunk));
+
 		let buffer = "";
 
 		for await (const chunk of proc.stdout!) {
@@ -77,10 +81,6 @@ export async function* runSession(opts: {
 				}
 			}
 		}
-
-		// Capture stderr for error reporting
-		const stderrChunks: Buffer[] = [];
-		proc.stderr?.on("data", (chunk: Buffer) => stderrChunks.push(chunk));
 
 		const exitCode = await new Promise<number>((resolve) => {
 			proc.on("close", resolve);
