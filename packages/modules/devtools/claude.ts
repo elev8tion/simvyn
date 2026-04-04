@@ -26,7 +26,7 @@ export async function* runSession(opts: {
 
 	const proc = spawn(
 		"claude",
-		["-p", fullPrompt, "--output-format", "stream-json", "--allowedTools", "Edit,Write,Bash,Read,Glob,Grep"],
+		["-p", fullPrompt, "--output-format", "stream-json", "--verbose", "--allowedTools", "Edit,Write,Bash,Read,Glob,Grep"],
 		{
 			cwd: opts.cwd,
 			env: { ...process.env },
